@@ -779,7 +779,7 @@ class TabbedBrowser(QWidget):
             self.widget.set_page_title(idx, url.toDisplayString())
         self.mode_autocmd(url)
 
-    def mode_autocmd(self, url: QUrl):
+    def mode_autocmd(self, url: QUrl) -> None:
         """Change mode based on url pattern.
 
         Args:
