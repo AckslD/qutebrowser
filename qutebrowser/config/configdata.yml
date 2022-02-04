@@ -2121,6 +2121,21 @@ tabs.mode_on_change:
       - normal: "Always revert to normal mode."
   desc: When switching tabs, what input mode is applied.
 
+tabs.url_mode_patterns:
+  default: {}
+  type:
+    name: Dict
+    none_ok: true
+    keytype: String
+    valtype:
+      name: String
+      valid_values: ['normal', 'insert', 'hint', 'passthrough', 'command',
+                     'prompt', 'yesno', 'caret', 'register']
+  desc: What URLs to automatically change to passthrough for.
+
+    Maps url regexes to modes.
+    The first match will be used.
+
 tabs.position:
   default: top
   type: Position

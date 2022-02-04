@@ -19,6 +19,7 @@
 
 """The main tabbed browser widget."""
 
+import re
 import collections
 import functools
 import weakref
@@ -776,6 +777,28 @@ class TabbedBrowser(QWidget):
 
         if not self.widget.page_title(idx):
             self.widget.set_page_title(idx, url.toDisplayString())
+        self.mode_autocmd(url)
+
+    def mode_autocmd(self, url: QUrl):
+        """Change mode based on url pattern.
+
+        Args:
+            url: The QUrl to match for
+        """
+        mode_patterns = config.val.tabs.url_mode_patterns
+        for pattern, mode in mode_patterns.items():
+            # TODO should probably use the same regex matching as for the other
+            # setting patterns
+            if re.search(pattern, url.toString()):
+                log.modes.debug(
+                    "Mode change to {} triggered for url {} due to pattern {}"
+                    .format(mode, url, pattern)
+                )
+                modeman.enter(
+                    self._win_id,
+                    usertypes.KeyMode[mode],
+                    reason='url_mode_autocmd',
+                )
 
     @pyqtSlot(browsertab.AbstractTab)
     def _on_icon_changed(self, tab):
@@ -847,6 +870,7 @@ class TabbedBrowser(QWidget):
             modeman.enter(self._win_id, tab.data.input_mode, 'restore')
         if self._now_focused is not None:
             self.tab_deque.on_switch(self._now_focused)
+        self.mode_autocmd(tab.url())
         log.modes.debug("Mode after tab change: {} (mode_on_change = {})"
                         .format(current_mode.name, mode_on_change))
         self._now_focused = tab
